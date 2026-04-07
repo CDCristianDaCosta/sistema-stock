@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Nueva Venta</h2>
+
+<form method="GET" class="mb-3">
+    <input type="text" name="q" placeholder="Buscar producto..." class="form-control" value="{{ request.GET.q }}">
+</form>
+
+<form method="POST" onsubmit="return validarVenta()">
+    {% csrf_token %}
+
+    <table class="table" id="tabla-ventas">
+        <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+        </tr>
+
+        {% for p in productos %}
+        <tr>
+            <td>{{ p.nombre }}</td>
+            <td class="precio">{{ p.precio }}</td>
+            <td>
+                {{ p.stock }}
+                {% if p.stock <= 5 %}
+                    <span style="color:red;">⚠ Bajo</span>
+                {% endif %}
+            </td>
+            <td>
+                <input type="number" 
+                       name="cantidad_{{ p.id }}" 
+                       value="0" 
+                       min="0" 
+                       max="{{ p.stock }}"
+                       class="form-control cantidad">
+            </td>
+            <td class="subtotal">0</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h3>Total: Gs. <span id="total">0</span></h3>
+
+    <!-- 💰 PAGO -->
+    <div class="mb-3">
+        <label>Pago del cliente</label>
+        <input type="number" id="pago" class="form-control">
+    </div>
+
+    <h4>Vuelto: Gs. <span id="vuelto">0</span></h4>
+
+    <button class="btn btn-success">💰 Confirmar Venta</button>
+    <button type="button" onclick="vaciarCarrito()" class="btn btn-danger">🗑 Vaciar</button>
+
+</form>
+
+<script>
+// 🔢 FORMATO CON PUNTOS
+function formato(numero) {
+    return numero.toLocaleString("es-PY");
+}
+
+// 💰 CALCULAR TOTAL
+function calcularTotal() {
+
+    let total = 0;
+
+    document.querySelectorAll("#tabla-ventas tr").forEach((row, index) => {
+
+        if (index === 0) return;
+
+        let precio = parseFloat(row.querySelector(".precio")?.innerText || 0);
+        let cantidad = parseInt(row.querySelector(".cantidad")?.value || 0);
+
+        let subtotal = precio * cantidad;
+
+        row.querySelector(".subtotal").innerText = formato(subtotal);
+
+        total += subtotal;
+    });
+
+    document.getElementById("total").innerText = formato(total);
+
+    calcularVuelto(total);
+}
+
+// 💵 CALCULAR VUELTO
+function calcularVuelto(total) {
+
+    let pago = parseInt(document.getElementById("pago").value || 0);
+
+    let vuelto = pago - total;
+
+    document.getElementById("vuelto").innerText = formato(vuelto >= 0 ? vuelto : 0);
+}
+
+// 🗑 VACIAR
+function vaciarCarrito() {
+    document.querySelectorAll(".cantidad").forEach(input => input.value = 0);
+    document.getElementById("pago").value = 0;
+    calcularTotal();
+}
+
+// 🚫 BLOQUEAR VENTA EN 0
+function validarVenta() {
+
+    let total = 0;
+
+    document.querySelectorAll(".cantidad").forEach(input => {
+        total += parseInt(input.value || 0);
+    });
+
+    if (total === 0) {
+        alert("No hay productos en la venta");
+        return false;
+    }
+
+    return true;
+}
+
+// EVENTOS
+document.querySelectorAll(".cantidad").forEach(input => {
+    input.addEventListener("input", calcularTotal);
+});
+
+document.getElementById("pago").addEventListener("input", () => {
+    let total = 0;
+
+    document.querySelectorAll("#tabla-ventas tr").forEach((row, index) => {
+        if (index === 0) return;
+
+        let precio = parseFloat(row.querySelector(".precio")?.innerText || 0);
+        let cantidad = parseInt(row.querySelector(".cantidad")?.value || 0);
+
+        total += precio * cantidad;
+    });
+
+    calcularVuelto(total);
+});
+
+// iniciar
+window.onload = calcularTotal;
+
+</script>
+
+{% endblock %}

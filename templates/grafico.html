@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Gráfico de Ventas</h2>
+
+<canvas id="graficoVentas"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const labels = {{ labels|safe }};
+const data = {{ data|safe }};
+
+const ctx = document.getElementById('graficoVentas');
+
+new Chart(ctx, {
+
+type: 'bar',
+
+data: {
+labels: labels,
+datasets: [{
+label: 'Ventas',
+data: data
+}]
+}
+
+});
+
+</script>
+
+{% endblock %}

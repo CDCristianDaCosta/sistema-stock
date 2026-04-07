@@ -1,0 +1,30 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Panel de Control</h2>
+
+<div class="row">
+
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5>Ventas del día</h5>
+                <p>Gs. {{ ventas_hoy }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5>Productos</h5>
+                <p>{{ total_productos }}</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

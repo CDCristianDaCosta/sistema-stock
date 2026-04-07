@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Productos</h2>
+
+<form method="GET" class="mb-3">
+    <input type="text" name="q" placeholder="Buscar producto..." class="form-control">
+</form>
+{% if request.user.groups.all.0.name == "Admin" %}
+<a href="/productos/agregar/" class="btn btn-success mb-3">
+    ➕ Agregar Producto
+</a>
+{% endif %}
+
+<table class="table table-striped">
+    <tr>
+        <th>Nombre</th>
+        <th>Precio</th>
+        <th>Stock</th>
+    </tr>
+
+    {% for p in productos %}
+    <tr>
+        <td>{{ p.nombre }}</td>
+        <td>{{ p.precio }}</td>
+        <td>{{ p.stock }}</td>
+    </tr>
+    {% if request.user.groups.all.0.name == "Admin" %}
+    <td>
+        <a href="/productos/editar/{{ p.id }}/" class="btn btn-warning btn-sm">✏️</a>
+        <a href="/productos/eliminar/{{ p.id }}/" class="btn btn-danger btn-sm">❌</a>
+    </td>
+    {% endif %}
+    
+    {% endfor %}
+</table>
+
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Reporte de Ventas</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Fecha</th>
+        <th>Total</th>
+    </tr>
+
+    {% for v in ventas %}
+    <tr>
+        <td>{{ v.fecha }}</td>
+        <td>{{ v.total }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
