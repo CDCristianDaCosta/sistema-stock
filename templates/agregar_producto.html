@@ -4,7 +4,7 @@
 
 <h2>Agregar Producto</h2>
 
-<form method="POST" class="card p-4">
+<form method="POST" enctype="multipart/form-data" class="card p-4">
     {% csrf_token %}
 
     <div class="mb-3">
@@ -20,6 +20,11 @@
     <div class="mb-3">
         <label>Stock</label>
         <input type="number" name="stock" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label>Imagen</label>
+        <input type="file" name="imagen" class="form-control">
     </div>
 
     <button class="btn btn-primary">Guardar</button>

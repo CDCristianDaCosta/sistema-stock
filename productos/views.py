@@ -18,6 +18,7 @@ def agregar_producto(request):
         nombre = request.POST["nombre"]
         precio = request.POST["precio"]
         stock = request.POST["stock"]
+        imagen = request.FILES.get("imagen")
 
         negocio = Negocio.objects.filter(propietario=request.user).first()
 
@@ -25,7 +26,7 @@ def agregar_producto(request):
             return redirect("/admin/")
 
         Producto.objects.create(
-            nombre=nombre, precio=precio, stock=stock, negocio=negocio
+            nombre=nombre, precio=precio, stock=stock, imagen=imagen, negocio=negocio
         )
 
         return redirect("/productos/")
@@ -56,6 +57,10 @@ def editar_producto(request, id):
         producto.nombre = request.POST["nombre"]
         producto.precio = request.POST["precio"]
         producto.stock = request.POST["stock"]
+        imagen = request.FILES.get("imagen")
+        if imagen:
+            producto.imagen = imagen
+
         producto.save()
 
         return redirect("/productos/")

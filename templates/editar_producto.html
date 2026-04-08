@@ -3,13 +3,19 @@
 
 <h2>Editar Producto</h2>
 
-<form method="POST" class="card p-4">
+<form method="POST" enctype="multipart/form-data" class="card p-4">
     {% csrf_token %}
-
+    
     <input type="text" name="nombre" value="{{ producto.nombre }}" class="form-control mb-2">
     <input type="number" name="precio" value="{{ producto.precio }}" class="form-control mb-2">
     <input type="number" name="stock" value="{{ producto.stock }}" class="form-control mb-2">
-
+    <div class="mb-3">
+        <label>Imagen</label>
+        <input type="file" name="imagen" class="form-control">
+    </div>
+    {% if producto.imagen %}
+    <img src="{{ producto.imagen.url }}" width="200">
+{% endif %}
     <button class="btn btn-primary">Actualizar</button>
 
 </form>

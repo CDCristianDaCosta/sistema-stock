@@ -13,6 +13,7 @@
 
     <table class="table" id="tabla-ventas">
         <tr>
+            <th>Imagen</th>
             <th>Producto</th>
             <th>Precio</th>
             <th>Stock</th>
@@ -22,6 +23,12 @@
 
         {% for p in productos %}
         <tr>
+            <td>
+                {% if p.imagen %}
+                    <img src="{{ p.imagen.url }}" width=100" >
+                {% endif %}
+            </td>
+
             <td>{{ p.nombre }}</td>
             <td class="precio">{{ p.precio }}</td>
             <td>
