@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from cloudinary.models import CloudinaryField
 
 
 class Negocio(models.Model):
@@ -17,6 +18,7 @@ class Producto(models.Model):
     precio = models.DecimalField(max_digits=10, decimal_places=0)
     stock = models.IntegerField()
     imagen = models.ImageField(upload_to="productos/", null=True, blank=True)
+    imagen = CloudinaryField("imagen", blank=True, null=True)
 
     def __str__(self):
         return self.nombre
