@@ -84,23 +84,8 @@ WSGI_APPLICATION = "sistema_stock.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# DATABASES = {
-#   "default": {
-#      "ENGINE": "django.db.backends.sqlite3",
-#     "NAME": BASE_DIR / "db.sqlite3",
-# }
-# }
-
 
 DATABASES = {"default": dj_database_url.config(default=os.environ.get("DATABASE_URL"))}
-# DATABASES = {
-#   "default": dj_database_url.parse(
-#      "postgresql://postgres.rgsrjbglxjyybkqernlj:123*Sisstoc@aws-1-us-east-1.pooler.supabase.com:6543/postgres"
-# )
-# }
-# DATABASES = {"default": {"ENGINE": "django.db.backends.postgresql","NAME": "postgres","USER": "postgres","PASSWORD": "123*Sisstoc","HOST": "db.rgsrjbglxjyybkqernlj.supabase.co","PORT": "5432",}}
-# DATABASES = {"default": dj_database_url.parse(os.environ.get("DATABASE_URL"))}
-# estaba en database_url en render postgresql://sistema_stock_db_user:d4aYOmKC9Qo4DN5gs2LviNIIg7oVA0En@dpg-d7ale5eslomc73e048s0-a/sistema_stock_db
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
