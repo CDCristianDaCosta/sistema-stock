@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Historial de Cajas</h2>
+
+<table class="table">
+<tr>
+    <th>Fecha</th>
+    <th>Inicial</th>
+    <th>Final</th>
+    <th>Estado</th>
+</tr>
+
+{% for c in cajas %}
+<tr>
+    <td>{{ c.fecha_apertura }}</td>
+    <td>{{ c.monto_inicial }}</td>
+    <td>{{ c.monto_final }}</td>
+    <td>{{ c.estado }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}

@@ -6,6 +6,7 @@
 
 <form method="POST" enctype="multipart/form-data" class="card p-4">
     {% csrf_token %}
+    <input type="text" name="codigo" placeholder="Código de producto" required>
 
     <div class="mb-3">
         <label>Nombre</label>

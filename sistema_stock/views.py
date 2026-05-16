@@ -6,6 +6,7 @@ from productos.models import Producto, Negocio
 from ventas.models import Venta
 from django.db.models import Sum
 from datetime import date
+from django.utils.timezone import now
 
 
 def login_view(request):
@@ -33,18 +34,34 @@ def dashboard(request):
     negocio = Negocio.objects.filter(usuarios=request.user).first()
     if not negocio:
         return redirect("/admin/")
-
-    ventas_hoy = (
-        Venta.objects.filter(negocio=negocio, fecha__date=date.today()).aggregate(
-            total=Sum("total")
-        )["total"]
+    ganancia = (
+        Venta.objects.filter(negocio=negocio).aggregate(Sum("ganancia"))[
+            "ganancia__sum"
+        ]
         or 0
     )
 
-    total_productos = Producto.objects.filter(negocio=negocio).count()
+    ventas_total = (
+        Venta.objects.filter(negocio=negocio).aggregate(Sum("total"))["total__sum"] or 0
+    )
+    hoy = now().date()
+    ventas_hoy = (
+        Venta.objects.filter(negocio=negocio, fecha__date=hoy).aggregate(Sum("total"))[
+            "total__sum"
+        ]
+        or 0
+    )
+
+    # 📦 productos bajo stock
+    productos_bajo = Producto.objects.filter(negocio=negocio, stock__lte=5)
 
     return render(
         request,
         "dashboard.html",
-        {"ventas_hoy": ventas_hoy, "total_productos": total_productos},
+        {
+            "ventas_total": ventas_total,
+            "ganancia": ganancia,
+            "ventas_hoy": ventas_hoy,
+            "productos_bajo": productos_bajo,
+        },
     )

@@ -1,0 +1,8 @@
+<h2>Editar Cliente</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="text" name="nombre" value="{{ cliente.nombre }}" class="form-control mb-2">
+    <input type="text" name="documento" value="{{ cliente.documento }}" class="form-control mb-2">
+    <button class="btn btn-primary">Actualizar</button>
+</form>

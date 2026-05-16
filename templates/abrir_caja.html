@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>Apertura de Caja</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label>Monto inicial</label>
+        <input type="number" name="monto_inicial" class="form-control" required>
+
+        <button class="btn btn-success mt-3">Abrir Caja</button>
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,8 @@
+<h2>Agregar Cliente</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="text" name="nombre" placeholder="Nombre" class="form-control mb-2">
+    <input type="text" name="documento" placeholder="CI o RUC" class="form-control mb-2">
+    <button class="btn btn-primary">Guardar</button>
+</form>

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>🔒 Cierre de Caja</h2>
+
+    <div class="card p-4 shadow">
+
+        <p><strong>Fecha apertura:</strong> {{ caja.fecha_apertura }}</p>
+        <p><strong>Fecha cierre:</strong> {{ caja.fecha_cierre }}</p>
+
+        <hr>
+
+        <p>💵 Monto inicial: <strong>Gs. {{ caja.monto_inicial|intcomma }}</strong></p>
+        <p>💰 Ventas en efectivo: <strong>Gs. {{ efectivo|intcomma }}</strong></p>
+        <p>🏦 Transferencias: <strong>Gs. {{ transferencia|intcomma }}</strong></p>
+
+        <hr>
+
+        <h4>Total vendido: Gs. {{ total|intcomma }}</h4>
+        <h4>💸 Monto final en caja: Gs. {{ caja.monto_final|intcomma }}</h4>
+
+        <a href="/ventas/" class="btn btn-primary mt-3">Volver al sistema</a>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,9 @@
+<h2>Agregar Proveedor</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="text" name="nombre" placeholder="Nombre" class="form-control mb-2">
+    <input type="text" name="telefono" placeholder="Teléfono" class="form-control mb-2">
+    <input type="text" name="direccion" placeholder="Dirección" class="form-control mb-2">
+    <button class="btn btn-primary">Guardar</button>
+</form>

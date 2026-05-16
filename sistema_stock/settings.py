@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import cloudinary
-
+import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
     "ventas",
     "cloudinary",
     "cloudinary_storage",
+    "django.contrib.humanize",
 ]
 
 MIDDLEWARE = [
@@ -80,13 +82,20 @@ WSGI_APPLICATION = "sistema_stock.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#   "default": {
+#      "ENGINE": "django.db.backends.sqlite3",
+#     "NAME": BASE_DIR / "db.sqlite3",
+# }
+# }
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.parse(
+        "postgresql://postgres.rgsrjbglxjyybkqernlj:123*Sisstoc@aws-1-us-east-1.pooler.supabase.com:6543/postgres"
+    )
 }
-
+# DATABASES = {"default": {"ENGINE": "django.db.backends.postgresql","NAME": "postgres","USER": "postgres","PASSWORD": "123*Sisstoc","HOST": "db.rgsrjbglxjyybkqernlj.supabase.co","PORT": "5432",}}
+# DATABASES = {"default": dj_database_url.parse(os.environ.get("DATABASE_URL"))}
+# estaba en database_url en render postgresql://sistema_stock_db_user:d4aYOmKC9Qo4DN5gs2LviNIIg7oVA0En@dpg-d7ale5eslomc73e048s0-a/sistema_stock_db
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -132,3 +141,11 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+USE_L10N = True
+
+
+cloudinary.config(
+    cloud_name="dchl3ztf0",
+    api_key="819489863245376",
+    api_secret="VaV36jRicdXvXkpCo2o4kp5QMng",
+)
