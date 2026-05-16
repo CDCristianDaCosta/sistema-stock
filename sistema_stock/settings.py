@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-w0ih#40^l77wifwh=25js+4ll(fv&cfi+3o9q7#qlle2puu%7="
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -88,11 +88,14 @@ WSGI_APPLICATION = "sistema_stock.wsgi.application"
 #     "NAME": BASE_DIR / "db.sqlite3",
 # }
 # }
-DATABASES = {
-    "default": dj_database_url.parse(
-        "postgresql://postgres.rgsrjbglxjyybkqernlj:123*Sisstoc@aws-1-us-east-1.pooler.supabase.com:6543/postgres"
-    )
-}
+
+
+DATABASES = {"default": dj_database_url.config(default=os.environ.get("DATABASE_URL"))}
+# DATABASES = {
+#   "default": dj_database_url.parse(
+#      "postgresql://postgres.rgsrjbglxjyybkqernlj:123*Sisstoc@aws-1-us-east-1.pooler.supabase.com:6543/postgres"
+# )
+# }
 # DATABASES = {"default": {"ENGINE": "django.db.backends.postgresql","NAME": "postgres","USER": "postgres","PASSWORD": "123*Sisstoc","HOST": "db.rgsrjbglxjyybkqernlj.supabase.co","PORT": "5432",}}
 # DATABASES = {"default": dj_database_url.parse(os.environ.get("DATABASE_URL"))}
 # estaba en database_url en render postgresql://sistema_stock_db_user:d4aYOmKC9Qo4DN5gs2LviNIIg7oVA0En@dpg-d7ale5eslomc73e048s0-a/sistema_stock_db
