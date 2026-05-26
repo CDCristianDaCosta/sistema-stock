@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from productos.models import Producto, Negocio
-from ventas.models import Venta
+from ventas.models import Venta, DetalleVenta
 from django.db.models import Sum
 from datetime import date
 from django.utils.timezone import now
@@ -29,22 +29,20 @@ def login_view(request):
 
 
 @login_required
+@login_required
 def dashboard(request):
 
     negocio = Negocio.objects.filter(usuarios=request.user).first()
+
     if not negocio:
         return redirect("/admin/")
-    ganancia = (
-        Venta.objects.filter(negocio=negocio).aggregate(Sum("ganancia"))[
-            "ganancia__sum"
-        ]
-        or 0
-    )
 
-    ventas_total = (
-        Venta.objects.filter(negocio=negocio).aggregate(Sum("total"))["total__sum"] or 0
-    )
     hoy = now().date()
+
+    mes_actual = hoy.month
+    anio_actual = hoy.year
+
+    # ventas hoy
     ventas_hoy = (
         Venta.objects.filter(negocio=negocio, fecha__date=hoy).aggregate(Sum("total"))[
             "total__sum"
@@ -52,16 +50,54 @@ def dashboard(request):
         or 0
     )
 
-    # 📦 productos bajo stock
-    productos_bajo = Producto.objects.filter(negocio=negocio, stock__lte=5)
+    # ventas del mes
+    ventas_mes = (
+        Venta.objects.filter(
+            negocio=negocio, fecha__month=mes_actual, fecha__year=anio_actual
+        ).aggregate(Sum("total"))["total__sum"]
+        or 0
+    )
 
+    # ganancia del mes
+    ganancia_mes = (
+        Venta.objects.filter(
+            negocio=negocio, fecha__month=mes_actual, fecha__year=anio_actual
+        ).aggregate(Sum("ganancia"))["ganancia__sum"]
+        or 0
+    )
+    # ventas totales
+    ventas_total = (
+        Venta.objects.filter(negocio=negocio).aggregate(Sum("total"))["total__sum"] or 0
+    )
+
+    # ganancia total
+    ganancia = (
+        Venta.objects.filter(negocio=negocio).aggregate(Sum("ganancia"))[
+            "ganancia__sum"
+        ]
+        or 0
+    )
+
+    # cantidad productos
+    cantidad_productos = Producto.objects.filter(negocio=negocio).count()
+
+    # stock bajo
+    productos_bajo = Producto.objects.filter(negocio=negocio, stock__lte=5)
+    top_productos = (
+        DetalleVenta.objects.filter(venta__negocio=negocio)
+        .values("producto__nombre")
+        .annotate(total=Sum("cantidad"))
+        .order_by("-total")[:5]
+    )
     return render(
         request,
         "dashboard.html",
         {
-            "ventas_total": ventas_total,
-            "ganancia": ganancia,
             "ventas_hoy": ventas_hoy,
+            "ventas_mes": ventas_mes,
+            "ganancia_mes": ganancia_mes,
+            "cantidad_productos": cantidad_productos,
             "productos_bajo": productos_bajo,
+            "top_productos": top_productos,
         },
     )

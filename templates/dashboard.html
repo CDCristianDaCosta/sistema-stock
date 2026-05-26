@@ -8,44 +8,65 @@
 
 <div class="row g-4">
 
-    <div class="col-lg-4 col-md-6 col-12">
+    <!-- VENTAS HOY -->
+    <div class="col-lg-3 col-md-6 col-12">
         <div class="card border-0 shadow-lg rounded-4 p-4 bg-success text-white">
-
             <h5>
                 <i class="fas fa-money-bill-wave"></i>
                 Ventas del día
             </h5>
 
             <h2 class="fw-bold">
-                Gs. {{ ventas_hoy|intcomma }}
+                <span class="numero-py">
+                    {{ ventas_hoy }}
+                </span>
             </h2>
         </div>
     </div>
 
-    <div class="col-lg-4 col-md-6 col-12">
-        <div class="card border-0 shadow-lg rounded-4 p-4 bg-primary text-white">
-
+    <!-- VENTAS MES -->
+    <div class="col-lg-3 col-md-6 col-12">
+        <div class="card border-0 shadow-lg rounded-4 p-4 bg-info text-white">
             <h5>
-                <i class="fas fa-chart-line"></i>
-                Ventas totales
+                <i class="fas fa-calendar"></i>
+                Ventas del mes
             </h5>
 
             <h2 class="fw-bold">
-                Gs. {{ ventas_total|intcomma }}
+                <span class="numero-py">
+                    {{ ventas_mes }}
+                </span>
             </h2>
         </div>
     </div>
 
-    <div class="col-lg-4 col-md-12 col-12">
+    <!-- GANANCIA -->
+    <div class="col-lg-3 col-md-6 col-12">
         <div class="card border-0 shadow-lg rounded-4 p-4 bg-warning text-dark">
-
             <h5>
                 <i class="fas fa-wallet"></i>
                 Ganancia
             </h5>
 
             <h2 class="fw-bold">
-                Gs. {{ ganancia|intcomma }}
+                <span class="numero-py">
+                    {{ ganancia_mes }}
+                </span>
+            </h2>
+        </div>
+    </div>
+
+
+    <!-- PRODUCTOS -->
+    <div class="col-lg-3 col-md-6 col-12">
+        <div class="card border-0 shadow-lg rounded-4 p-4 bg-primary text-white">
+            <h5>
+                <i class="fas fa-box"></i>
+                Productos
+            </h5>
+
+            <h2 class="fw-bold">
+                {{ cantidad_productos }}
             </h2>
         </div>
     </div>
@@ -81,5 +102,48 @@
     </ul>
 
 </div>
+<div class="card mt-4 shadow border-0 rounded-4 p-4">
 
+    <h4 class="mb-3">
+        🔥 Productos más vendidos
+    </h4>
+
+    {% for p in top_productos %}
+        <div class="d-flex justify-content-between border-bottom py-2">
+
+            <span>
+                {{ p.producto__nombre }}
+            </span>
+
+            <strong>
+                {{ p.total }} vendidos
+            </strong>
+
+        </div>
+
+    {% empty %}
+        <p class="text-muted">
+            No hay ventas todavía
+        </p>
+    {% endfor %}
+
+</div>
+
+
+<script>
+
+    document.querySelectorAll(".numero-py")
+    .forEach(numero => {
+    
+        let valor =
+            numero.innerText
+            .replace(/\D/g, "");
+    
+        numero.innerText =
+            parseInt(valor || 0)
+            .toLocaleString("es-PY")
+            .replace(/,/g, ".");
+    });
+    
+    </script>
 {% endblock %}

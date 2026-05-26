@@ -15,8 +15,11 @@ import cloudinary
 import os
 import dj_database_url
 
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv()
 
 
 # Quick-start development settings - unsuitable for production
@@ -85,7 +88,9 @@ WSGI_APPLICATION = "sistema_stock.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
-DATABASES = {"default": dj_database_url.config(default=os.environ.get("DATABASE_URL"))}
+# python manage.py migrateDATABASES = {"default": dj_database_url.config(default=os.environ.get("DATABASE_URL"))}
+# DATABASES = {"default": dj_database_url.config(default="sqlite:///db.sqlite3")}
+DATABASES = {"default": dj_database_url.parse(os.getenv("DATABASE_URL"))}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -110,7 +115,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
+USE_THOUSAND_SEPARATOR = True
+THOUSAND_SEPARATOR = "."
 
+# DECIMAL_SEPARATOR = ","
 TIME_ZONE = "UTC"
 
 USE_I18N = True

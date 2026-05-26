@@ -13,6 +13,8 @@ from .views import (
     eliminar_proveedor,
     lista_compras,
     nueva_compra,
+    exportar_excel,
+    editar_proveedor,
 )
 
 urlpatterns = [
@@ -26,7 +28,12 @@ urlpatterns = [
     path("clientes/eliminar/<int:id>/", eliminar_cliente, name="eliminar_cliente"),
     path("proveedores/", lista_proveedores),
     path("proveedores/agregar/", agregar_proveedor),
+    path(
+        "proveedores/editar/<int:id>/",
+        editar_proveedor,
+    ),
     path("proveedores/eliminar/<int:id>/", eliminar_proveedor),
     path("compras/", lista_compras),
     path("compras/nueva/", nueva_compra),
+    path("excel/", exportar_excel, name="excel"),
 ]

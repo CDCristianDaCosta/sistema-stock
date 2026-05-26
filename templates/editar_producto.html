@@ -9,6 +9,11 @@
     <input type="text" name="nombre" value="{{ producto.nombre }}" class="form-control mb-2">
     <input type="number" name="precio" value="{{ producto.precio }}" class="form-control mb-2">
     <input type="number" name="stock" value="{{ producto.stock }}" class="form-control mb-2">
+    <label>Costo</label>
+<input type="number"
+       name="costo"
+       class="form-control"
+       value="{{ producto.costo }}">
     <div class="mb-3">
         <label>Imagen</label>
         <input type="file" name="imagen" class="form-control">

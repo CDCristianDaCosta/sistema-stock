@@ -1,210 +1,443 @@
 {% extends "base.html" %}
-
+{% load humanize %}
 {% block content %}
 
-<h2>Nueva Venta</h2>
+<div class="container-fluid">
 
-<form method="GET" class="mb-3">
-    <input type="text" id="buscarCodigo" placeholder="Buscar por código o nombre">
-    
-    <input type="text" name="q" placeholder="Buscar producto..." class="form-control" value="{{ request.GET.q }}">
-</form>
+    <h2 class="mb-4 fw-bold">
+        🛒 Nueva Venta
+    </h2>
 
-<form method="POST" onsubmit="return validarVenta()">
-    {% csrf_token %}
-
-
-
-
-
-
-    
-    <!-- 🔥 CLIENTE (AFUERA DE LA TABLA) -->
+    <!-- BUSCADOR -->
     <div class="mb-3">
-        <label>Cliente</label>
-        <select name="cliente" class="form-control">
-            <option value="">Consumidor Final</option>
-            {% for c in clientes %}
-                <option value="{{ c.id }}">{{ c.nombre }} - {{ c.documento }}</option>
-            {% endfor %}
-        </select>
+        <input
+            type="text"
+            id="buscarCodigo"
+            class="form-control form-control-lg"
+            placeholder="🔍 Buscar por código o nombre..."
+        >
     </div>
 
-    <table class="table" id="tabla-ventas">
-        <tr>
-            <th>Código</th>
-            <th>Imagen</th>
-            <th>Producto</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th>Cantidad</th>
-            <th>Subtotal</th>
-        </tr>
+    <form method="POST" onsubmit="return validarVenta()">
+        {% csrf_token %}
 
-        {% for p in productos %}
-        <tr>
-            <td>{{ p.codigo }}</td>
-            <td>
-                {% if p.imagen %}
-                    <img src="{{ p.imagen.url }}" width="100">
-                {% endif %}
-            </td>
+        <!-- CLIENTE -->
+        <div class="mb-4">
+            <label class="fw-bold">
+                Cliente
+            </label>
 
-            <td>{{ p.nombre }}</td>
-            <td class="precio">{{ p.precio }}</td>
+            <select
+                name="cliente"
+                class="form-control"
+            >
+                <option value="">
+                    Consumidor Final
+                </option>
 
-            <td>
-                {{ p.stock }}
-                {% if p.stock <= 5 %}
-                    <span style="color:red;">⚠ Bajo</span>
-                {% endif %}
-            </td>
+                {% for c in clientes %}
+                <option value="{{ c.id }}">
+                    {{ c.nombre }} - {{ c.documento }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
 
-            <td>
-                <input type="number" 
-                       name="cantidad_{{ p.id }}" 
-                       value="0" 
-                       min="0" 
-                       max="{{ p.stock }}"
-                       class="form-control cantidad">
-            </td>
+        <!-- TABLA -->
+        <div class="table-responsive shadow rounded">
 
-            <td class="subtotal">0</td>
-        </tr>
-        {% endfor %}
-    </table>
+            <table
+                class="table table-striped table-hover align-middle"
+                id="tabla-ventas"
+            >
 
-    <h3>Total: Gs. <span id="total">0</span></h3>
+                <thead class="table-dark">
+                    <tr>
+                        <th>Código</th>
+                        <th>Imagen</th>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th width="120">Cantidad</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
 
-    <!-- 💰 PAGO -->
-    <div class="mb-3">
-        <label>Pago del cliente</label>
-        <input type="number" name="pago" id="pago" class="form-control">    
-    </div>
+                <tbody>
+                    {% for p in productos %}
+                    <tr>
 
-    <h4>Vuelto: Gs. <span id="vuelto">0</span></h4>
+                        <td>
+                            {{ p.codigo }}
+                        </td>
 
-    <div class="mb-3">
-        <label>Tipo de pago</label>
-        <select name="tipo_pago" class="form-control">
-            <option value="efectivo">Efectivo</option>
-            <option value="transferencia">Transferencia</option>
-        </select>
-    </div>
+                        <td>
+                            {% if p.imagen %}
+                            <img
+                                src="{{ p.imagen.url }}"
+                                width="70"
+                                class="rounded shadow-sm"
+                            >
+                            {% endif %}
+                        </td>
 
-    <button class="btn btn-success">💰 Confirmar Venta</button>
-    <button type="button" onclick="vaciarCarrito()" class="btn btn-danger">🗑 Vaciar</button>
+                        <td>
+                            {{ p.nombre }}
+                        </td>
 
-</form>
+                        <!-- PRECIO -->
+                        <td>
+
+                            <span class="precio-visible fw-bold text-success">
+                                Gs.
+                                {{ p.precio|floatformat:0 }}
+                            </span>
+                        
+                            <span class="precio d-none">
+                                {{ p.precio|floatformat:0 }}
+                            </span>
+                        
+                        </td>
+
+                        <!-- STOCK -->
+                        <td>
+                            {{ p.stock }}
+
+                            {% if p.stock <= 5 %}
+                            <span class="text-danger fw-bold">
+                                ⚠ Bajo
+                            </span>
+                            {% endif %}
+                        </td>
+
+                        <!-- CANTIDAD -->
+                        <td>
+                            <input
+                                type="number"
+                                name="cantidad_{{ p.id }}"
+                                value="0"
+                                min="0"
+                                max="{{ p.stock }}"
+                                class="form-control cantidad"
+                            >
+                        </td>
+
+                        <!-- SUBTOTAL -->
+                        <td class="subtotal fw-bold">
+                            0
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+        <!-- TOTAL -->
+        <div class="mt-4">
+
+            <h2 class="fw-bold">
+                Total: Gs.
+                <span id="total">
+                    0
+                </span>
+            </h2>
+
+        </div>
+
+        <!-- PAGO -->
+        <div class="mt-4">
+
+            <label class="fw-bold">
+                Pago del cliente
+            </label>
+
+            <input
+                type="text"
+                name="pago"
+                id="pago"
+                class="form-control form-control-lg"
+                inputmode="numeric"
+                placeholder="Ej: 200.000"
+            >
+
+        </div>
+
+        <!-- VUELTO -->
+        <div class="mt-4 mb-3">
+
+            <h3 class="fw-bold text-success">
+                Vuelto: Gs.
+                <span id="vuelto">
+                    0
+                </span>
+            </h3>
+
+        </div>
+
+        <!-- TIPO PAGO -->
+        <div class="mb-4">
+
+            <label class="fw-bold">
+                Tipo de pago
+            </label>
+
+            <select
+                name="tipo_pago"
+                class="form-control"
+            >
+                <option value="efectivo">
+                    Efectivo
+                </option>
+
+                <option value="transferencia">
+                    Transferencia
+                </option>
+            </select>
+
+        </div>
+
+        <!-- BOTONES -->
+        <div class="d-flex gap-2 flex-wrap">
+
+            <button class="btn btn-success btn-lg">
+                💰 Confirmar Venta
+            </button>
+
+            <button
+                type="button"
+                onclick="vaciarCarrito()"
+                class="btn btn-danger btn-lg"
+            >
+                🗑 Vaciar
+            </button>
+
+        </div>
+
+    </form>
+</div>
 
 <script>
-// 🔢 FORMATO CON PUNTOS
+
+// =========================
+// FORMATO 100000 -> 100.000
+// =========================
 function formato(numero) {
-    return numero.toLocaleString("es-PY");
+
+    numero = parseInt(numero) || 0;
+
+    return numero
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
-// 💰 CALCULAR TOTAL
+
+// =========================
+// CALCULAR TOTAL
+// =========================
 function calcularTotal() {
 
     let total = 0;
 
-    document.querySelectorAll("#tabla-ventas tr").forEach((row, index) => {
+    document.querySelectorAll(
+        "#tabla-ventas tbody tr"
+    ).forEach(row => {
 
-        if (index === 0) return;
+        let precioTexto =
+            row.querySelector(".precio")
+            ?.innerText || "0";
 
-        let precio = parseFloat(row.querySelector(".precio")?.innerText || 0);
-        let cantidad = parseInt(row.querySelector(".cantidad")?.value || 0);
+        let precio =
+            parseInt(
+                precioTexto.replace(/\D/g, "")
+            ) || 0;
 
-        let subtotal = precio * cantidad;
+        let cantidad =
+            parseInt(
+                row.querySelector(".cantidad")
+                ?.value || 0
+            );
 
-        row.querySelector(".subtotal").innerText = formato(subtotal);
+        let subtotal =
+            precio * cantidad;
+
+        row.querySelector(".subtotal")
+        .innerText =
+            formato(subtotal);
 
         total += subtotal;
     });
 
-    document.getElementById("total").innerText = formato(total);
+    document.getElementById("total")
+    .innerText =
+        formato(total);
 
     calcularVuelto(total);
 }
 
-// 💵 CALCULAR VUELTO
+
+// =========================
+// CALCULAR VUELTO
+// =========================
 function calcularVuelto(total) {
 
-    let pago = parseInt(document.getElementById("pago").value || 0);
+    let pagoTexto =
+        document.getElementById("pago")
+        .value || "0";
 
-    let vuelto = pago - total;
+    pagoTexto =
+        pagoTexto.replace(/\D/g, "");
 
-    document.getElementById("vuelto").innerText = formato(vuelto >= 0 ? vuelto : 0);
+    let pago =
+        parseInt(pagoTexto) || 0;
+
+    let vuelto =
+        pago - total;
+
+    document.getElementById("vuelto")
+    .innerText =
+        formato(
+            vuelto >= 0
+            ? vuelto
+            : 0
+        );
 }
 
-// 🗑 VACIAR
+
+// =========================
+// INPUT PAGO CON PUNTOS
+// =========================
+document.getElementById("pago")
+.addEventListener("input", function() {
+
+    let valor =
+        this.value.replace(/\D/g, "");
+
+    this.value =
+        formato(valor);
+
+    let totalTexto =
+        document.getElementById("total")
+        .innerText
+        .replace(/\D/g, "");
+
+    let total =
+        parseInt(totalTexto) || 0;
+
+    calcularVuelto(total);
+});
+
+
+// =========================
+// EVENTO CANTIDAD
+// =========================
+document.querySelectorAll(".cantidad")
+.forEach(input => {
+
+    input.addEventListener(
+        "input",
+        calcularTotal
+    );
+
+});
+
+
+// =========================
+// VACIAR
+// =========================
 function vaciarCarrito() {
-    document.querySelectorAll(".cantidad").forEach(input => input.value = 0);
-    document.getElementById("pago").value = 0;
+
+    document.querySelectorAll(".cantidad")
+    .forEach(input => {
+
+        input.value = 0;
+    });
+
+    document.getElementById("pago")
+    .value = "";
+
     calcularTotal();
 }
 
-// 🚫 BLOQUEAR VENTA EN 0
+
+// =========================
+// VALIDAR
+// =========================
 function validarVenta() {
 
-    let total = 0;
+    let totalCantidad = 0;
 
-    document.querySelectorAll(".cantidad").forEach(input => {
-        total += parseInt(input.value || 0);
+    document.querySelectorAll(".cantidad")
+    .forEach(input => {
+
+        totalCantidad +=
+            parseInt(
+                input.value || 0
+            );
     });
 
-    if (total === 0) {
-        alert("No hay productos en la venta");
+    if (totalCantidad === 0) {
+
+        alert(
+            "No hay productos en la venta"
+        );
+
         return false;
     }
+
+    // quitar puntos antes de enviar
+    let pagoInput =
+        document.getElementById("pago");
+
+    pagoInput.value =
+        pagoInput.value.replace(/\D/g, "");
 
     return true;
 }
 
-// EVENTOS
-document.querySelectorAll(".cantidad").forEach(input => {
-    input.addEventListener("input", calcularTotal);
-});
 
-document.getElementById("pago").addEventListener("input", () => {
-    let total = 0;
+// =========================
+// BUSCADOR
+// =========================
+document.getElementById("buscarCodigo")
+.addEventListener("input", function() {
 
-    document.querySelectorAll("#tabla-ventas tr").forEach((row, index) => {
-        if (index === 0) return;
+    let texto =
+        this.value.toLowerCase();
 
-        let precio = parseFloat(row.querySelector(".precio")?.innerText || 0);
-        let cantidad = parseInt(row.querySelector(".cantidad")?.value || 0);
+    document.querySelectorAll(
+        "#tabla-ventas tbody tr"
+    ).forEach(row => {
 
-        total += precio * cantidad;
+        let contenido =
+            row.innerText.toLowerCase();
+
+        row.style.display =
+            contenido.includes(texto)
+            ? ""
+            : "none";
     });
-
-    calcularVuelto(total);
 });
+
 
 // iniciar
-window.onload = calcularTotal;
+window.onload =
+    calcularTotal;
 
-// 🔍 BUSCAR POR CÓDIGO (TIPO SUPERMERCADO)
-// 🔍 FILTRAR PRODUCTOS EN TIEMPO REAL
-document.getElementById("buscarCodigo").addEventListener("input", function() {
 
-    let texto = this.value.toLowerCase();
+    // FORMATEAR PRECIOS VISIBLES
+document.querySelectorAll(".precio-visible")
+.forEach(precio => {
 
-    document.querySelectorAll("#tabla-ventas tr").forEach((row, index) => {
+    let numero =
+        precio.innerText
+        .replace(/\D/g, "");
 
-        if (index === 0) return; // saltar encabezado
-
-        let contenido = row.innerText.toLowerCase();
-
-        if (contenido.includes(texto)) {
-            row.style.display = "";
-        } else {
-            row.style.display = "none";
-        }
-    });
+    precio.innerText =
+        "Gs. " +
+        formato(numero);
 });
 </script>
 
 {% endblock %}
-
-    

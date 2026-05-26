@@ -8,6 +8,9 @@ class Negocio(models.Model):
     propietario = models.ForeignKey(User, on_delete=models.CASCADE)
     usuarios = models.ManyToManyField(User, related_name="negocios")
 
+    def __str__(self):
+        return self.nombre
+
 
 class Producto(models.Model):
 
@@ -20,6 +23,12 @@ class Producto(models.Model):
     imagen = models.ImageField(upload_to="productos/", null=True, blank=True)
     imagen = CloudinaryField("imagen", blank=True, null=True)
     costo = models.IntegerField(default=0)
+
+    @property
+    def margen(self):
+        if self.costo > 0:
+            return round(((self.precio - self.costo) / self.costo) * 100, 1)
+        return 0
 
 
 class Cliente(models.Model):

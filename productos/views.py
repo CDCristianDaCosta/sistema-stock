@@ -5,6 +5,8 @@ from productos.models import Producto, Negocio, Cliente, Proveedor
 from .models import Compra, DetalleCompra
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.http import HttpResponse
+import openpyxl
 
 
 def es_admin(user):
@@ -22,6 +24,7 @@ def agregar_producto(request):
         stock = request.POST["stock"]
         imagen = request.FILES.get("imagen")
         codigo = request.POST["codigo"]
+        costo = request.POST["costo"]
 
         negocio = Negocio.objects.filter(propietario=request.user).first()
 
@@ -35,6 +38,7 @@ def agregar_producto(request):
             imagen=imagen,
             negocio=negocio,
             codigo=codigo,
+            costo=costo,
         )
 
         return redirect("/productos/")
@@ -44,7 +48,7 @@ def agregar_producto(request):
 
 def lista_productos(request):
 
-    negocio = Negocio.objects.get(propietario=request.user)
+    negocio = Negocio.objects.filter(usuarios=request.user).first()
 
     query = request.GET.get("q")
 
@@ -55,7 +59,7 @@ def lista_productos(request):
             Q(nombre__icontains=query) | Q(codigo__icontains=query)
         )
 
-    return render(request, "productos.html", {"productos": productos})
+    return render(request, "productos.html", {"productos": productos, "query": query})
 
 
 def editar_producto(request, id):
@@ -67,7 +71,9 @@ def editar_producto(request, id):
         producto.nombre = request.POST["nombre"]
         producto.precio = request.POST["precio"]
         producto.stock = request.POST["stock"]
+        producto.costo = request.POST["costo"]
         imagen = request.FILES.get("imagen")
+
         if imagen:
             producto.imagen = imagen
 
@@ -160,6 +166,28 @@ def agregar_proveedor(request):
 
 
 @login_required
+def editar_proveedor(request, id):
+
+    proveedor = Proveedor.objects.get(id=id)
+
+    if request.method == "POST":
+
+        proveedor.nombre = request.POST["nombre"]
+        proveedor.telefono = request.POST["telefono"]
+        proveedor.direccion = request.POST["direccion"]
+
+        proveedor.save()
+
+        return redirect("/productos/proveedores/")
+
+    return render(
+        request,
+        "editar_proveedor.html",
+        {"proveedor": proveedor},
+    )
+
+
+@login_required
 def eliminar_proveedor(request, id):
     proveedor = Proveedor.objects.get(id=id)
     proveedor.delete()
@@ -173,7 +201,6 @@ def lista_compras(request):
     return render(request, "compras.html", {"compras": compras})
 
 
-@login_required
 @login_required
 def nueva_compra(request):
     negocio = Negocio.objects.filter(usuarios=request.user).first()
@@ -219,3 +246,32 @@ def nueva_compra(request):
         "nueva_compra.html",
         {"productos": productos, "proveedores": proveedores},
     )
+
+
+@login_required
+def exportar_excel(request):
+
+    negocio = Negocio.objects.filter(usuarios=request.user).first()
+
+    productos = Producto.objects.filter(negocio=negocio)
+
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "Productos"
+
+    headers = ["Nombre", "Código", "Precio", "Costo", "Stock"]
+
+    sheet.append(headers)
+
+    for p in productos:
+        sheet.append([p.nombre, p.codigo, p.precio, p.costo, p.stock])
+
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+    response["Content-Disposition"] = 'attachment; filename="productos.xlsx"'
+
+    workbook.save(response)
+
+    return response

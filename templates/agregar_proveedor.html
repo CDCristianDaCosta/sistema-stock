@@ -1,9 +1,54 @@
-<h2>Agregar Proveedor</h2>
+{% extends "base.html" %}
 
-<form method="POST">
-    {% csrf_token %}
-    <input type="text" name="nombre" placeholder="Nombre" class="form-control mb-2">
-    <input type="text" name="telefono" placeholder="Teléfono" class="form-control mb-2">
-    <input type="text" name="direccion" placeholder="Dirección" class="form-control mb-2">
-    <button class="btn btn-primary">Guardar</button>
-</form>
+{% block content %}
+
+<div class="container">
+
+    <div class="card shadow p-4">
+
+        <h2 class="mb-4">
+            🏭 Nuevo Proveedor
+        </h2>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label>Nombre</label>
+
+                <input
+                type="text"
+                name="nombre"
+                class="form-control"
+                required>
+            </div>
+
+            <div class="mb-3">
+                <label>Teléfono</label>
+
+                <input
+                type="text"
+                name="telefono"
+                class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label>Dirección</label>
+
+                <input
+                type="text"
+                name="direccion"
+                class="form-control">
+            </div>
+
+            <button class="btn btn-success w-100">
+                Guardar Proveedor
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
