@@ -1,2 +1,2 @@
 runtime.txt
-python-3.13.1
+python-3.12.10
