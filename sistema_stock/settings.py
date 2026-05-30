@@ -92,12 +92,17 @@ WSGI_APPLICATION = "sistema_stock.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+print("DATABASE_URL =", DATABASE_URL)
+
 DATABASES = {
-    "default": dj_database_url.config(
-        default=os.environ.get("DATABASE_URL"), conn_max_age=600, ssl_require=True
+    "default": dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age=600,
+        ssl_require=True,
     )
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
