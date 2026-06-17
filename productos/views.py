@@ -68,12 +68,13 @@ def editar_producto(request, id):
     if not es_admin(request.user):
         return redirect("/dashboard/")
     if request.method == "POST":
-        producto.nombre = request.POST["nombre"]
-        producto.precio = request.POST["precio"]
-        producto.stock = request.POST["stock"]
-        producto.costo = request.POST["costo"]
+        producto.nombre = request.POST.get("nombre", "")
+        producto.precio = request.POST.get("precio") or 0
+        producto.stock = request.POST.get("stock") or 0
+        producto.costo = request.POST.get("costo") or 0
         imagen = request.FILES.get("imagen")
 
+        imagen = request.FILES.get("imagen")
         if imagen:
             producto.imagen = imagen
 

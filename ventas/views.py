@@ -17,8 +17,14 @@ def generar_pdf(request, venta_id):
     venta = Venta.objects.get(id=venta_id)
     detalles = DetalleVenta.objects.filter(venta=venta)
 
+    negocio = venta.negocio
+
     template = get_template("ticket.html")
-    html = template.render({"venta": venta, "detalles": detalles})
+    html = template.render({
+    "venta": venta,
+    "detalles": detalles,
+    "negocio": negocio,
+})
 
     response = HttpResponse(content_type="application/pdf")
     response["Content-Disposition"] = f"attachment; filename=venta_{venta.id}.pdf"
@@ -81,8 +87,12 @@ def nueva_venta(request):
                     subtotal = producto.precio * cantidad
                     total += subtotal
 
-                    ganancia = (producto.precio - producto.costo) * cantidad
-                    ganancia_total += ganancia
+                    ganancia_producto = (
+    (float(producto.precio) - float(producto.costo))
+    * cantidad
+)
+
+                    ganancia_total += ganancia_producto
 
                     DetalleVenta.objects.create(
                         venta=venta,
@@ -103,7 +113,18 @@ def nueva_venta(request):
         pago = Decimal(request.POST.get("pago", 0))
         tipo_pago = request.POST.get("tipo_pago")
 
-        if pago < total:
+        descuento = request.POST.get("descuento", "0")
+        descuento = Decimal(str(descuento).replace(".", ""))
+
+        # total final con descuento
+        total_final = total - descuento
+
+        # descuento afecta ganancia UNA sola vez
+        ganancia_total -= float(descuento)
+
+        if total_final < 0:
+            total_final = 0
+        if pago < total_final:
             venta.delete()
             return redirect("/ventas/")
 
@@ -115,16 +136,21 @@ def nueva_venta(request):
         else:
             numero = 1
 
-        numero_factura = f"001-001-{str(numero).zfill(7)}"
+        numero_factura = (
+    f"{negocio.establecimiento}-"
+    f"{negocio.punto_expedicion}-"
+    f"{str(numero).zfill(7)}"
+)
 
         # 💾 guardar datos finales
-        venta.total = total
-        venta.ganancia = ganancia_total
+        venta.total = total_final
+        venta.ganancia = max(0, int(ganancia_total))    
         venta.numero_factura = numero_factura
         venta.timbrado = "12345678"
         venta.pago = pago
         venta.tipo_pago = tipo_pago
-        venta.vuelto = pago - total
+        venta.vuelto = pago - total_final
+        venta.descuento = descuento
         venta.save()
 
         return redirect("ticket", venta_id=venta.id)
@@ -141,12 +167,14 @@ def nueva_venta(request):
 
 
 @login_required
+@login_required
 def reporte_ventas(request):
     negocio = Negocio.objects.filter(usuarios=request.user).first()
 
     ventas = Venta.objects.filter(negocio=negocio).order_by("-fecha")
 
     total_vendido = ventas.aggregate(Sum("total"))["total__sum"] or 0
+
     total_ganancia = ventas.aggregate(Sum("ganancia"))["ganancia__sum"] or 0
 
     return render(
@@ -166,8 +194,17 @@ def ticket(request, venta_id):
     venta = Venta.objects.get(id=venta_id)
     detalles = DetalleVenta.objects.filter(venta=venta)
 
-    return render(request, "ticket.html", {"venta": venta, "detalles": detalles})
+    negocio = venta.negocio
 
+    return render(
+        request,
+        "ticket.html",
+        {
+            "venta": venta,
+            "detalles": detalles,
+            "negocio": negocio,
+        },
+    )
 
 @login_required
 def grafico_ventas(request):

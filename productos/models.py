@@ -8,6 +8,19 @@ class Negocio(models.Model):
     propietario = models.ForeignKey(User, on_delete=models.CASCADE)
     usuarios = models.ManyToManyField(User, related_name="negocios")
 
+    ruc = models.CharField(max_length=30, blank=True, null=True)
+    timbrado = models.CharField(max_length=30, blank=True, null=True)
+
+    establecimiento = models.CharField(
+        max_length=3,
+        default="001"
+    )
+
+    punto_expedicion = models.CharField(
+        max_length=3,
+        default="001"
+    )
+
     def __str__(self):
         return self.nombre
 

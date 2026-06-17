@@ -9,15 +9,27 @@
         <h2 class="fw-bold">
             📦 Productos
         </h2>
-
-        {% if request.user.groups.all.0.name == "Admin" %}
-        <a
-            href="/productos/agregar/"
-            class="btn btn-success"
-        >
-            ➕ Agregar Producto
-        </a>
-        {% endif %}
+    
+        <div class="d-flex gap-2">
+    
+            <a
+                href="/productos/excel/"
+                class="btn btn-primary"
+            >
+                📥 Descargar Excel
+            </a>
+    
+            {% if request.user.groups.all.0.name == "Admin" %}
+            <a
+                href="/productos/agregar/"
+                class="btn btn-success"
+            >
+                ➕ Agregar Producto
+            </a>
+            {% endif %}
+    
+        </div>
+    
     </div>
 
     <!-- BUSCADOR -->

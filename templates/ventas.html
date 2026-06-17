@@ -173,6 +173,23 @@
                     0
                 </span>
             </h3>
+            <div class="mt-3">
+
+                <label class="fw-bold">
+                    Descuento (opcional)
+                </label>
+            
+                <input
+                    type="text"
+                    name="descuento"
+                    id="descuento"
+                    class="form-control form-control-lg"
+                    value="0"
+                    inputmode="numeric"
+                    placeholder="Ej: 20.000"
+                >
+            
+            </div>
 
         </div>
 
@@ -269,11 +286,27 @@ function calcularTotal() {
         total += subtotal;
     });
 
+    let descuentoTexto =
+        document.getElementById("descuento")
+        ?.value || "0";
+
+    let descuento =
+        parseInt(
+            descuentoTexto.replace(/\D/g, "")
+        ) || 0;
+
+    let totalFinal =
+        total - descuento;
+
+    if (totalFinal < 0) {
+        totalFinal = 0;
+    }
+
     document.getElementById("total")
     .innerText =
-        formato(total);
+        formato(totalFinal);
 
-    calcularVuelto(total);
+    calcularVuelto(totalFinal);
 }
 
 
@@ -326,6 +359,17 @@ document.getElementById("pago")
         parseInt(totalTexto) || 0;
 
     calcularVuelto(total);
+});
+document.getElementById("descuento")
+.addEventListener("input", function() {
+
+    let valor =
+        this.value.replace(/\D/g, "");
+
+    this.value =
+        formato(valor);
+
+    calcularTotal();
 });
 
 
